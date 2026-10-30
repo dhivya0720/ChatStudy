@@ -77,42 +77,47 @@ Client-server chat applications are foundational to real-time communication over
 server.py
 ```
 import socket
+from datetime import datetime
 
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind(('127.0.0.1', 12345))
-server.listen(1)
+s = socket.socket()
+s.bind(('localhost', 8000))
+s.listen(5)
 
-print("Waiting for client...")
-connection, address = server.accept()
-print("Client connected:", address)
+print("Server is waiting for a client...")
 
-number = int(connection.recv(1024).decode())
-result = number * number
+c, addr = s.accept()
+print("Client Address:", addr)
 
-connection.send(str(result).encode())
-print("Square calculated:", result)
+now = datetime.now()
+c.send(now.strftime("%d/%m/%Y %H:%M:%S").encode())
 
-connection.close()
-server.close()
+ack = c.recv(1024).decode()
+if ack:
+    print(ack)
+
+c.close()
+s.close()
+
 ```
 client.py
 ```
 import socket
 
-client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect(('127.0.0.1', 12345))
+s = socket.socket()
+s.connect(('localhost', 8000))
 
-number = input("Enter a number: ")
-client.send(number.encode())
+print("Client Address:", s.getsockname())
+print("Server Date and Time:", s.recv(1024).decode())
 
-result = client.recv(1024).decode()
-print("Square of the number:", result)
+s.send("Acknowledgement received".encode())
 
-client.close()
+s.close()
+
 
 ```
 **##Output:**
-<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/ada1e687-1960-4fac-bbd5-fdbce1c6572a" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/b99bdf0c-9806-430a-a5ae-c3ee5e07a8a3" />
+
 
 ## Result:
 
